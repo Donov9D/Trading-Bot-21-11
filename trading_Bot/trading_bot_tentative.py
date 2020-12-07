@@ -11,7 +11,7 @@ Version : 1.0
 pip install yfinance
 
 import yfinance as yf
-import portefeuille
+import portefeuille, chandelier, actif
 
 
 """Liste des variables a définir:
@@ -29,6 +29,17 @@ H1 : une heure de fin d’achat
 H2 : une heure de fin de journée et on vend ce qui reste.
 
 """
+
+data = yf.Ticker("^FCHI")
+dataDF = data.history(period='1d',interval='1m', start='2020-12-04')
+dataDF = dataDF[['Open','Close','High','Low']]
+#Boucle sur des chandeliers
+candlestick_list = []
+for i in range(len(dataDF.index)):
+    step =  dataDF.index[i]
+    c = Chandelier("1m",dataDF.loc[step,'Open'],dataDF.loc[step,'Close'],
+                   dataDF.loc[step,'High'],dataDF.loc[step,'Low'])
+
 def test_gain_pos(i,q):
     if i<15:
         return False
@@ -83,25 +94,10 @@ def test_suivant(i):
     else:
         return False
 
-data = yf.Ticker("^FCHI")
-dataDF = data.history(period='1d',interval='1m', start='2020-12-04')
-
-dataDF = dataDF[['Open','Close','High','Low']]
-#Boucle sur des chandeliers
-color_list = []
-for i in range(len(dataDF.index)):
-    step =  dataDF.index[i]
-    c = Chandelier("1m",dataDF.loc[step,'Open'],dataDF.loc[step,'Close'],
-                   dataDF.loc[step,'High'],dataDF.loc[step,'Low'])
-    
-    color_list.append(c.couleur())
-
-capital = 1000
-
-
 #######################################################################
 ######################## Corps du main         ########################
 #######################################################################
+
 t=0
 q=0.1
 event = []
